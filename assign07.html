@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mortgage Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <header>
+        <div id="house-icon"></div>
+        <h1>Mortgage Calculator</h1>
+    </header>
+    <section>
+        <form>
+            <label for="apr">APR (Annual Percentage Rate)</label>
+            <span><input type="terxt" name="apr" id="apr" oninput="checkApr()"> % <span class="warning"
+                    id="apr-error"></span></span>
+            <label for="term">Loan Term (in years)</label>
+            <span><input type="text" name="term" id="term" oninput="checkTerm()"> years <span class="warning"
+                    id="term-error"></span></span>
+            <label for="amount">Loan Amount (in dollars) $ </label>
+            <span><input type="text" name="amount" id="amount" oninput="checkAmount()"><span class="warning"
+                    id="amount-error"></span></span>
+            <button type="button" class="button1" onclick="checkForm()">Calculate</button>
+            <label for="result">Monthly Payment</label>
+            <input type="text" name="payment" id="payment" value="0" readonly>
+            <p class="warning" id="outputWarning"></p>
+        </form>
+    </section>
+    <script>
+        let inApr, inloanTermYears, inAmount, monthlyPayment, aprError, termError, amountError;
+
+        function checkForm() {
+            checkApr()
+            checkTerm()
+            checkAmount()
+            aprError = document.getElementById("apr-error").innerHTML;
+            termError = document.getElementById("term-error").innerHTML;
+            amountError = document.getElementById("amount-error").innerHTML;
+            try {
+                if (aprError != "" || termError != "" || amountError != "") {
+                    document.getElementById("payment").value = "0";
+                    throw " *Please complete the fields properly";
+                } else {
+                    mortgageCalc();
+                    document.getElementById("outputWarning").innerHTML = "";
+                }
+            } catch (error) {
+                document.getElementById("outputWarning").innerHTML = error;
+            }
+
+            if (aprError != "") {
+                document.getElementById("apr").style.backgroundColor = "rgb(255, 177, 220)";
+            } else { document.getElementById("apr").style.backgroundColor = "initial" }
+            
+            if (termError != "") {
+                document.getElementById("term").style.backgroundColor = "rgb(255, 177, 220)";
+            } else { document.getElementById("term").style.backgroundColor = "initial" }
+            
+            if (amountError != "") {
+                document.getElementById("amount").style.backgroundColor = "rgb(255, 177, 220)";
+            } else { document.getElementById("amount").style.backgroundColor = "initial" }
+        }
+
+        function mortgageCalc() {
+            inApr = parseFloat(document.getElementById("apr").value) / 100;
+            inloanTermYears = parseInt(document.getElementById("term").value);
+            inAmount = parseInt(document.getElementById("amount").value);
+            monthlyPayment = computeMortgage(inApr, inloanTermYears, inAmount);
+            document.getElementById("payment").value = "$ " + monthlyPayment;
+        }
+
+        function computeMortgage(apr, termY, amount) {
+            let monthRes = (amount * ((1 + (apr / 12)) ** (termY * 12)) * (apr / 12)) / (((1 + (apr / 12)) ** (termY * 12)) - 1);
+            return monthRes.toFixed(2);
+        }
+
+        function checkApr() {
+            let val = document.getElementById("apr").value;
+            var message = document.getElementById("apr-error");
+            message.innerHTML = "";
+            try {
+                if (val > 25 || val < 0) throw " *out of range";
+                if (val == "") throw " *empty field"
+            }
+            catch (err) {
+                message.innerHTML = err;
+            }
+        }
+
+        function checkTerm() {
+            let val = document.getElementById("term").value;
+            var message = document.getElementById("term-error");
+            message.innerHTML = "";
+            try {
+                if (val > 40 || val < 0) throw " *out of range";
+                if (val == "") throw " *empty field";
+            }
+            catch (err) {
+                message.innerHTML = err;
+            }
+        }
+
+        function checkAmount() {
+            let val = document.getElementById("amount").value;
+            var message = document.getElementById("amount-error");
+            message.innerHTML = "";
+            try {
+                if (val == "") throw " *empty field"
+            }
+            catch (err) {
+                message.innerHTML = err;
+            }
+        }
+
+    </script>
+</body>
+
+</html>
